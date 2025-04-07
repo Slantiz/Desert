@@ -1,0 +1,125 @@
+package com.slantiz.epicgame.world;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+
+import com.slantiz.epicgame.entity.Entity;
+import com.slantiz.epicgame.entity.components.ICollidable;
+import com.slantiz.epicgame.util.Noise;
+import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.util.VecHasher;
+
+import javafx.scene.image.Image;
+
+public class World {
+
+	private Vec chunkNumUnits;
+	private Image chunkSprite;
+
+	private ArrayList<Entity> entities;
+	private HashMap<Long, Chunk> chunks;
+
+	public World(Vec chunkSize) {
+		this.chunkNumUnits = chunkSize;
+
+		this.entities = new ArrayList<>();
+		this.chunks = new HashMap<>();
+	}
+
+	public void generateChunk(int chunkX, int chunkY, Noise noise) {
+		long hash = VecHasher.szudzikHash(chunkX, chunkY);
+		if (chunks.containsKey(hash)) return;
+		chunks.put(hash, new Chunk(chunkX, chunkY, chunkSprite, noise, this));
+	}
+
+	public void generateChunks(Vec pos, int generationRadius, Noise noise) {
+		int curChunkX = pos.x >= 0.0 ? (int)(pos.x / chunkNumUnits.x) : (int)(pos.x / chunkNumUnits.x - 1);
+		int curChunkY = pos.y >= 0.0 ? (int)(pos.y / chunkNumUnits.y) : (int)(pos.y / chunkNumUnits.y - 1);
+
+		// Generate new chunks in a square around pos.
+		for (int y = -generationRadius; y <= generationRadius; y++) {
+			for (int x = -generationRadius; x <= generationRadius; x++) {
+				generateChunk(curChunkX + x, curChunkY + y, noise);
+			}
+		}
+	}
+
+	public void removeChunk(int chunkX, int chunkY) {
+		long hash = VecHasher.szudzikHash(chunkX, chunkY);
+		chunks.remove(hash);
+	}
+
+	public void removeChunks(Vec pos, double radius) {
+		ArrayList<Chunk> chunksToRemove = new ArrayList<>();
+
+		// Append chunks outside radius to chunksToRemove
+		for (Chunk chunk : this.chunks.values()) {
+			if (pos.sqrDist(chunk.getPos()) > Math.pow(radius, 2)) chunksToRemove.add(chunk);
+		}
+
+		// Actually remove the chunks
+		for (Chunk chunk : chunksToRemove) {
+			this.chunks.remove(VecHasher.szudzikHash(chunk.getChunkX(), chunk.getChunkY()));
+		}
+	}
+
+	public void update(double dt) {
+		// Update every entity
+		for (Entity entity : entities) {
+			entity.update(dt);
+		}
+
+		// Trigger collisions
+		for (Entity entity : entities) {
+			 if (!(entity instanceof ICollidable)) continue;
+			 var entitiesInRadius = getEntitiesInRadius(entity.getPos(), 1);
+			 for (Entity other : entitiesInRadius) {
+				if (!(other instanceof ICollidable)) continue;
+				if (entity == other) continue;
+				((ICollidable)other).onCollision(entity);
+			 }
+		}
+	}
+
+	public ArrayList<Entity> getEntitiesInRadius(Vec pos, double radius) {
+		ArrayList<Entity> entitiesInRadius = new ArrayList<>();
+		for (Entity entity : entities) {
+			if (entity.getPos().sqrDist(pos) > radius) continue;
+			entitiesInRadius.add(entity);
+		}
+		return entitiesInRadius;
+	}
+
+	public double leastRemoveRadius(int generationRadius) {
+		return Math.sqrt(Math.pow((generationRadius + 1) * Math.max(chunkNumUnits.x, chunkNumUnits.y), 2) * 2);
+	}
+
+	public Vec getChunkNumUnits() {
+		return chunkNumUnits.copy();
+	}
+
+	public Image getChunkSprite() {
+		return chunkSprite;
+	}
+
+	public void setChunkSprite(Image chunkSprite) {
+		this.chunkSprite = chunkSprite;
+	}
+
+	public ArrayList<Entity> getEntities() {
+		return this.entities;
+	}
+
+	public void addEntity(Entity entity) {
+		this.entities.add(entity);
+	}
+
+	public void removeEntity(Entity entity) {
+		this.entities.remove(entity);
+	}
+
+	public HashMap<Long, Chunk> getChunks() {
+		return this.chunks;
+	}
+}
