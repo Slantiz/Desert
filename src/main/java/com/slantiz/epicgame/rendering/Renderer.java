@@ -111,13 +111,10 @@ public class Renderer {
 		gc.drawImage(sprite, coord.x, coord.y, size.x, size.y);
 	}
 
-	public void renderText(Vec coord, int size, String text) {
+	public void renderText(Font font, Vec coord, String text) {
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		gc.save();
-		Font f = Font.loadFont(Renderer.class.getResource("/mc_font.ttf").toExternalForm(), size);
-		gc.setFont(f);
+		gc.setFont(font);
 		gc.setFill(Color.BLACK);
 		gc.fillText(text, coord.x, coord.y);
-		gc.restore();
 	}
 }

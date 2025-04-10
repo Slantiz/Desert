@@ -2,7 +2,6 @@ package com.slantiz.epicgame.world;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 import com.slantiz.epicgame.entity.Entity;
 import com.slantiz.epicgame.entity.components.ICollidable;

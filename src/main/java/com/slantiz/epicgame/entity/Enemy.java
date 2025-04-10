@@ -2,6 +2,7 @@ package com.slantiz.epicgame.entity;
 
 import com.slantiz.epicgame.entity.components.ICollidable;
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
@@ -9,8 +10,8 @@ public class Enemy extends Character implements ICollidable {
 
 	private Entity target;
 
-	public Enemy(Vec pos, Vec size, Image sprite) {
-		super(pos, size, sprite);
+	public Enemy(World world, Vec pos, Vec size, Image sprite) {
+		super(world, pos, size, sprite);
 		target = null;
 	}
 
@@ -20,13 +21,6 @@ public class Enemy extends Character implements ICollidable {
 
 	public void setTarget(Entity target) {
 		this.target = target;
-	}
-
-	@Override
-	public void update(double dt) {
-		dir = target.getPos().sub(pos);
-		if (dir.len() > 0) dir = dir.normalized();
-		super.update(dt);
 	}
 
 	@Override
@@ -42,4 +36,10 @@ public class Enemy extends Character implements ICollidable {
 		}
 	}
 
+	@Override
+	public void update(double dt) {
+		// dir = target.getPos().sub(pos);
+		// if (dir.len() > 0) dir = dir.normalized();
+		// super.update(dt);
+	}
 }

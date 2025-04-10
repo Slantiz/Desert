@@ -1,30 +1,37 @@
 package com.slantiz.epicgame.entity;
 
+import com.slantiz.epicgame.entity.components.IHoldable;
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
-public class Sword extends Entity {
-	
-	public Character target;
+public class Sword extends Entity implements IHoldable {
 
-	public Sword(Vec pos, Vec size, Image sprite) {
-		super(pos, size, sprite);
+	public Sword(World world, Vec pos, Vec size, Image sprite) {
+		super(world, pos, size, sprite);
 	}
 
-	public Character getTarget() {
-		return this.target;
+	@Override
+	public void pickUp() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'pickUp'");
 	}
 
-	public void setTarget(Character target) {
-		this.target = target;
+	@Override
+	public void use() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'use'");
+	}
+
+	@Override
+	public void drop() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'drop'");
 	}
 
 	@Override
 	public void update(double deltaTime) {
-		if (target != null) {
-			this.pos = this.target.getPos();
-		}
+		
 	}
-	
 }

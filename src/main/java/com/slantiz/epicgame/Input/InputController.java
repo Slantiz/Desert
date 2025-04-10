@@ -17,14 +17,12 @@ public class InputController {
 	private ArrayList<IMoveHandle> moveHandles;
 	private ArrayList<IMouseHandler> mouseHandles;
 	private Vec moveDir;
-	private Vec cursorPos;
 
 	public InputController(Scene scene) {
 		this.activeKeys = new HashSet<>();
 		this.moveHandles = new ArrayList<>();
 		this.mouseHandles = new ArrayList<>();
 		this.moveDir = Vec.zero();
-		this.cursorPos = Vec.zero();
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override

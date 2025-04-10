@@ -1,5 +1,8 @@
 package com.slantiz.epicgame.util;
 
+/**
+ * A 2D vector class making 2D computations easier.
+ */
 public class Vec {
 	public double x;
 	public double y;

@@ -1,6 +1,8 @@
 package com.slantiz.epicgame.entity;
 
+import com.slantiz.epicgame.entity.components.IHoldable;
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
@@ -10,31 +12,38 @@ import javafx.scene.image.Image;
 public abstract class Character extends Entity {
 
 	protected Vec dir;
-	protected double facing;
 	protected Vec velocity;
+	protected double facing;
+	protected double acceleration;
 	protected double speed;
+	protected IHoldable heldEntity;
+	protected double pickUpRange;
 
 	/**
 	 * Initiates a new controllable entity.
+	 * @param world The entity's world
 	 * @param pos An initial position
 	 * @param size An initial size
 	 * @param sprite An image for rendering
 	 */
-	public Character(Vec pos, Vec size, Image sprite) {
-		super(pos, size, sprite);
+	public Character(World world, Vec pos, Vec size, Image sprite) {
+		super(world, pos, size, sprite);
 
-		this.dir = Vec.zero();
-		this.facing = 0;
-		this.velocity = Vec.zero();
+		dir = Vec.zero();
+		velocity = Vec.zero();
+		facing = 0;
+		acceleration = 1;
+		speed = 2;
+		heldEntity = null;
 	}
 
 	public Vec getDir() {
-		return this.dir.copy();
+		return dir.copy();
 	}
 
 	/**
 	 * Set the entity's movement direction.
-	 * This is used by controllers.
+	 * This is used by character controllers.
 	 * @param dir Direction to move
 	 */
 	public void setDir(Vec dir) {
@@ -42,12 +51,12 @@ public abstract class Character extends Entity {
 	}
 
 	public double getFacing() {
-		return this.facing;
+		return facing;
 	}
 
 	/**
 	 * Set the entity's facing angle.
-	 * This is used by controllers.
+	 * This is used by character controllers.
 	 * @param facing Angle to face
 	 */
 	public void setFacing(double facing) {
@@ -55,29 +64,73 @@ public abstract class Character extends Entity {
 	}
 
 	public Vec getVelocity() {
-		return this.velocity.copy();
+		return velocity.copy();
 	}
 
+	/**
+	 * Set the entity's velocity.
+	 * This can be used by character controllers.
+	 * @param velocity The character's velocity
+	 */
 	public void setVelocity(Vec velocity) {
 		this.velocity = velocity;
+	}
+
+	public double getAcceleration() {
+		return acceleration;
+	}
+
+	/**
+	 * Set the entity's acceleration.
+	 * This can be used by character controllers.
+	 * @param acceleration The movement acceleration
+	 */
+	public void setAcceleration(double acceleration) {
+		this.acceleration = acceleration;
 	}
 
 	public double getSpeed() {
 		return speed;
 	}
 
+	/**
+	 * Set the entity's speed.
+	 * This can be used by character controllers.
+	 * @param speed The maximum movement speed
+	 */
 	public void setSpeed(double speed) {
-		if (speed < 0) {
-			throw new IllegalArgumentException("speed cannot be negative.");
-		}
 		this.speed = speed;
+	}
+
+	public double getPickUpRange() {
+		return pickUpRange;
+	}
+
+	/**
+	 * Set the entity's pick-up range.
+	 * @param pickUpRange The pickUpRange
+	 */
+	public void setPickUpRange(double range) {
+		this.pickUpRange = range;
+	}
+
+	public IHoldable getHeldEntity() {
+		return heldEntity;
+	}
+
+	/**
+	 * Set the entity's holdable entity.
+	 * @param heldEntity
+	 */
+	public void setHeldEntity(IHoldable heldEntity) {
+		this.heldEntity = heldEntity;
 	}
 
 	@Override
 	public void update(double dt) {
-		// Simply translate
-		Vec velocityDiff = dir.mul(speed).sub(velocity);
-		velocity = velocity.add(velocityDiff.mul(0.1));
-		pos = this.pos.add(velocity.mul(dt));
+		Vec targetVelocity = dir.mul(speed);
+		Vec velocityDiff = targetVelocity.sub(velocity);
+		velocity = velocity.add(velocityDiff.mul(acceleration * dt));
+		pos = pos.add(velocity.mul(dt));
 	}
 }

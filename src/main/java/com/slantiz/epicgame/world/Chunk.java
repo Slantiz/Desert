@@ -1,7 +1,6 @@
 package com.slantiz.epicgame.world;
 
 import com.slantiz.epicgame.EntityFactory;
-import com.slantiz.epicgame.entity.Cactus;
 import com.slantiz.epicgame.util.Noise;
 import com.slantiz.epicgame.util.Vec;
 
@@ -25,10 +24,9 @@ public class Chunk {
 
 	private void generate(Noise noise, World world) {
 		if (Math.random() < 0.5) {
-			// spawn cactus
+			// Spawn cactus
 			Vec randomOffset = new Vec(Math.random() * world.getChunkNumUnits().x, Math.random() * world.getChunkNumUnits().y);
-			Cactus cactus = EntityFactory.makeCactus(this.getPos().add(randomOffset));
-			world.addEntity(cactus);
+			EntityFactory.spawnCactus(world, this.getPos().add(randomOffset));
 		}
 	}
 

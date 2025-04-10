@@ -1,6 +1,7 @@
 package com.slantiz.epicgame.entity;
 
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
@@ -9,25 +10,38 @@ import javafx.scene.image.Image;
  */
 public abstract class Entity {
 	
+	protected World world;
 	protected Vec pos;
-	protected double rot;
 	protected Vec size;
-	protected Vec pivot;
 	protected Image sprite;
+	protected double rot;
+	protected Vec pivot;
 
 	/**
 	 * Initiates a new entity.
+	 * @param world The entity's world
 	 * @param pos An initial position
 	 * @param size An initial size
 	 * @param sprite An image for rendering
 	 */
-	public Entity(Vec pos, Vec size, Image sprite) {
+	public Entity(World world, Vec pos, Vec size, Image sprite) {
+		this.world = world;
 		this.pos = pos;
 		this.sprite = sprite;
 		this.size = size;
 
 		rot = 0;
+
+		// Center pivot
 		pivot = size.copy().div(2);
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 
 	public Vec getPos() {
@@ -46,6 +60,14 @@ public abstract class Entity {
 		this.size = size;
 	}
 
+	public Image getSprite() {
+		return sprite;
+	}
+
+	public void setSprite(Image sprite) {
+		this.sprite = sprite;
+	}
+
 	public double getRot() {
 		return rot;
 	}
@@ -62,17 +84,16 @@ public abstract class Entity {
 		this.pivot = pivot;
 	}
 
-	public Image getSprite() {
-		return sprite;
-	}
+	/**
+	 * This runs when the entity is destroyed.
+	 */
+	public void destroy() {
 
-	public void setSprite(Image sprite) {
-		this.sprite = sprite;
 	}
 
 	/**
 	 * Updates the entity's state.
-	 * This should run every frame.
+	 * This is called every frame.
 	 * @param deltaTime Time (seconds) since last frame
 	 */
 	public abstract void update(double deltaTime);

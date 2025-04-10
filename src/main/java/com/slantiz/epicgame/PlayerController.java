@@ -2,14 +2,11 @@ package com.slantiz.epicgame;
 
 import com.slantiz.epicgame.Input.InputController;
 import com.slantiz.epicgame.entity.Player;
-import com.slantiz.epicgame.entity.Sword;
 import com.slantiz.epicgame.rendering.Renderer;
-import com.slantiz.epicgame.util.Vec;
 
 public class PlayerController {
 
 	private Player target;
-	private Sword sword;
 
 	/**
 	 * Creates a new player controller.
@@ -26,12 +23,12 @@ public class PlayerController {
 		});
 
 		// Make sword point toward mouse
-		inputController.registerMouseHandler((mousePos) -> {
-			if (this.sword == null) return;
-			Vec dir = renderer.pos(mousePos).sub(target.getPos());
-			double angle = Math.copySign(1, dir.x) * dir.angleDeg(new Vec(0, -1));
-			sword.setRot(angle);
-		});
+		// inputController.registerMouseHandler((mousePos) -> {
+		// 	if (this.sword == null) return;
+		// 	Vec dir = renderer.pos(mousePos).sub(target.getPos());
+		// 	double angle = Math.copySign(1, dir.x) * dir.angleDeg(new Vec(0, -1));
+		// 	sword.setRot(angle);
+		// });
 	}
 
 	public Player getPlayer() {
@@ -40,13 +37,5 @@ public class PlayerController {
 
 	public void setPlayer(Player target) {
 		this.target = target;
-	}
-
-	public Sword getSword() {
-		return this.sword;
-	}
-
-	public void setSword(Sword sword) {
-		this.sword = sword;
 	}
 }

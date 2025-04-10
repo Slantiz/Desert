@@ -1,34 +1,35 @@
 package com.slantiz.epicgame.entity;
 
 import com.slantiz.epicgame.entity.components.ICollidable;
-import com.slantiz.epicgame.entity.components.IHealth;
+import com.slantiz.epicgame.entity.components.IDamageable;
+import com.slantiz.epicgame.entity.components.IThirstable;
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
-public class Player extends Character implements IHealth, ICollidable {
+public class Player extends Character implements IDamageable, IThirstable, ICollidable {
 
 	protected int maxHealth;
 	protected int health;
-	protected int maxThirst;
-	protected int thirst;
-	protected double thirstTimeCounter;
+	protected int maxHydration;
+	protected int hydration;
 
 	/**
 	 * Creates a new player entity.
+	 * @param world The entity's world
 	 * @param pos An initial position
 	 * @param size An initial size
 	 * @param sprite An image for rendering
 	 * @return A player entity
 	 */
-	public Player(Vec pos, Vec size, Image sprite, int maxHealth, int health, int maxThirst, int thirst) {
-		super(pos, size, sprite);
-		thirstTimeCounter = 0;
+	public Player(World world, Vec pos, Vec size, Image sprite, int maxHealth, int health, int maxThirst, int thirst) {
+		super(world, pos, size, sprite);
 
-		this.setMaxHealth(maxHealth);;
-		this.setHealth(health);
-		this.setMaxThirst(maxThirst);
-		this.setThirst(thirst);
+		setMaxHealth(maxHealth);;
+		setHealth(health);
+		setMaxHydration(maxThirst);
+		setHydration(thirst);
 	}
 
 	public int getMaxHealth() {
@@ -48,46 +49,41 @@ public class Player extends Character implements IHealth, ICollidable {
 
 	public void setHealth(int health) {
 		// Clamp the health between 0 and maxHealth
-		this.health = Math.max(Math.min(health, this.maxHealth), 0);
-		if (health <= 0) this.kill();
+		this.health = Math.max(Math.min(health, maxHealth), 0);
+		if (health <= 0) kill();
 	}
 
-	public int getMaxThirst() {
-		return maxThirst;
+	public int getMaxHydration() {
+		return maxHydration;
 	}
 
-	public void setMaxThirst(int maxThirst) {
-		this.maxThirst = maxThirst;
+	public void setMaxHydration(int maxHydration) {
+		this.maxHydration = maxHydration;
 	}
 
-	public int getThirst() {
-		return thirst;
+	public int getHydration() {
+		return hydration;
 	}
 
-	public void setThirst(int thirst) {
-		// Clamp the thirst between 0 and maxThirst
-		this.thirst = Math.max(Math.min(thirst, maxThirst), 0);
+	public void setHydration(int hydration) {
+		// Clamp the hydration between 0 and maxThirst
+		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
 	}
 
-	@Override
-	public void update(double dt) {
-		if (thirstTimeCounter > 1) {
-			if (thirst > 0) thirst -= 1;
-			else damage(1);
-			System.out.println("yo");
-			thirstTimeCounter = 0;
+	public void thirst(int amount) {
+		if (amount < 0) {
+			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		thirstTimeCounter += dt;
-
-		super.update(dt);
+		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
 	}
 
-	@Override
-	public void kill() {
-		System.out.println("THIS DIED!");
+	public void hydrate(int amount) {
+		if (amount < 0) {
+			throw new IllegalArgumentException("amount cannot be negative.");
+		}
+		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
 	}
 
-	@Override
 	public void damage(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
@@ -95,7 +91,6 @@ public class Player extends Character implements IHealth, ICollidable {
 		this.setHealth(this.health - amount);
 	}
 
-	@Override
 	public void heal(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
@@ -103,8 +98,16 @@ public class Player extends Character implements IHealth, ICollidable {
 		this.setHealth(this.health + amount);
 	}
 
-	@Override
+	public void kill() {
+		System.out.println(String.format("%s JUST DIED!", this.getClass().getName()));
+	}
+
 	public void onCollision(Entity other) {
 		
+	}
+
+	@Override
+	public void update(double dt) {
+		super.update(dt);
 	}
 }

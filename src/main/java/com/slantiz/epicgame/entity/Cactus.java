@@ -3,15 +3,16 @@ package com.slantiz.epicgame.entity;
 import java.util.Set;
 
 import com.slantiz.epicgame.entity.components.ICollidable;
-import com.slantiz.epicgame.entity.components.IHealth;
+import com.slantiz.epicgame.entity.components.IDamageable;
 import com.slantiz.epicgame.util.Vec;
+import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
 public class Cactus extends Entity implements ICollidable {
 
-	public Cactus(Vec pos, Vec size, Image sprite) {
-		super(pos, size, sprite);
+	public Cactus(World world, Vec pos, Vec size, Image sprite) {
+		super(world, pos, size, sprite);
 	}
 
 	@Override
@@ -21,8 +22,8 @@ public class Cactus extends Entity implements ICollidable {
 
 	@Override
 	public void onCollision(Entity other) {
-		if (Set.of(other.getClass().getInterfaces()).contains(IHealth.class)) {
-			((IHealth)other).damage(10);
+		if (Set.of(other.getClass().getInterfaces()).contains(IDamageable.class)) {
+			((IDamageable)other).damage(10);
 		}
 		if ((other instanceof Character)) {
 			Vec dir = other.getPos().sub(pos).normalized();

@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -90,7 +89,7 @@ public class Settings {
 		}
 
 		Yaml yaml = new Yaml();
-		InputStream combined = new SequenceInputStream(defaultStream, optionalStream);
+		InputStream combined = optionalStream != null ? new SequenceInputStream(defaultStream, optionalStream) : defaultStream;
 		SettingsData settingsData = yaml.loadAs(combined, SettingsData.class);
 		LOGGER.info("Successfully loaded settings");
 		return settingsData;
