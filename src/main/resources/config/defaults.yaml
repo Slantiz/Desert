@@ -1,0 +1,8 @@
+resolution: [1920, 1080]
+title: "Epic Desert Game"
+assetsFolder: "assets"
+texturesPath: "textures"
+audioPath: "audio"
+fontsPath: "fonts"
+playerSpeed: 4
+playerAcceleration: 15
