@@ -117,4 +117,19 @@ public class Renderer {
 		gc.setFill(Color.BLACK);
 		gc.fillText(text, coord.x, coord.y);
 	}
+
+	public void drawDebugDot(World world, Vec pos) {
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		Vec coord = screenCoord(pos);
+		gc.setFill(Color.RED);
+		gc.fillOval(coord.x - 5, coord.y - 5, 10, 10);
+	}
+
+	public void drawDebugDot(World world, Vec pos, double radius) {
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		Vec coord = screenCoord(pos);
+		double coordRadius = radius * getPixelsInUnit();
+		gc.setFill(Color.BLUE);
+		gc.fillOval(coord.x - coordRadius, coord.y - coordRadius, coordRadius * 2, coordRadius * 2);
+	}
 }
