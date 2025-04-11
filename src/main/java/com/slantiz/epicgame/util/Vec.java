@@ -72,6 +72,19 @@ public class Vec {
 		return Math.acos(this.dot(other) / (this.len() * other.len())) * 180 / Math.PI;
 	}
 
+	public double signedAngleDeg(Vec other) {
+		return -Math.atan2(this.x * other.y - this.y * other.x, this.x * other.x + this.y * other.y) * 180 / Math.PI;
+	}
+
+	public Vec rotated(double angle) {
+		double a = angle * Math.PI / 180;
+		return new Vec(Math.cos(a) * this.x - Math.sin(a) * this.y, Math.sin(a) * this.x + Math.cos(a) * this.y);	
+	}
+
+	public static Vec fromRot(double angle) {
+		return new Vec(0, -1).rotated(angle);
+	}
+
 	@Override
 	public String toString() {
 		return String.format("(%.2f, %.2f)", this.x, this.y);

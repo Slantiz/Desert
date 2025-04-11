@@ -1,6 +1,6 @@
 package com.slantiz.epicgame.controllers;
 
-import com.slantiz.epicgame.Input.InputController;
+import com.slantiz.epicgame.input.InputController;
 import com.slantiz.epicgame.rendering.Renderer;
 import com.slantiz.epicgame.util.Vec;
 

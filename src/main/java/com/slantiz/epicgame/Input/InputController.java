@@ -1,4 +1,4 @@
-package com.slantiz.epicgame.Input;
+package com.slantiz.epicgame.input;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,19 +9,24 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 public class InputController {
 
 	private HashSet<KeyCode> activeKeys;
-	private ArrayList<IMoveHandle> moveHandles;
-	private ArrayList<IMouseHandler> mouseHandles;
+	private ArrayList<IMoveHandle> moveHandlers;
+	private ArrayList<IMouseHandler> mouseHandlers;
+	private ArrayList<IButtonHandler> interactHandlers;
+	private ArrayList<IButtonHandler> useHandlers;
 	private Vec moveDir;
 
 	public InputController(Scene scene) {
 		this.activeKeys = new HashSet<>();
-		this.moveHandles = new ArrayList<>();
-		this.mouseHandles = new ArrayList<>();
+		this.moveHandlers = new ArrayList<>();
+		this.mouseHandlers = new ArrayList<>();
+		this.interactHandlers = new ArrayList<>();
+		this.useHandlers = new ArrayList<>();
 		this.moveDir = Vec.zero();
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -31,6 +36,10 @@ public class InputController {
 				activeKeys.add(k);
 				
 				updateMove();
+
+				if (k == KeyCode.E) {
+					triggerInteract();
+				}
             }
         });
 
@@ -51,7 +60,26 @@ public class InputController {
 
 				updateMouse(mousePos);
 			}
+		});
 
+		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				Vec mousePos = new Vec(event.getX(), event.getY());
+
+				updateMouse(mousePos);
+			}
+		});
+
+		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				MouseButton k = event.getButton();
+
+				if (k == MouseButton.PRIMARY) {
+					triggerUse();
+				}
+			}
 		});
     }
 
@@ -65,7 +93,7 @@ public class InputController {
 
 		if (this.moveDir.equals(dir)) return;
 
-		for (IMoveHandle handler : this.moveHandles) {
+		for (IMoveHandle handler : this.moveHandlers) {
 			handler.handleMove(dir);
 		}
 
@@ -73,17 +101,37 @@ public class InputController {
 	}
 
 	public void registerMoveHandler(IMoveHandle handler) {
-		this.moveHandles.add(handler);
+		this.moveHandlers.add(handler);
 	}
 
 	private void updateMouse(Vec mousePos) {
-		for (IMouseHandler handler : this.mouseHandles) {
+		for (IMouseHandler handler : this.mouseHandlers) {
 			handler.handleMouseMove(mousePos);
 		}
 	}
 
 	public void registerMouseHandler(IMouseHandler handler) {
-		this.mouseHandles.add(handler);
+		this.mouseHandlers.add(handler);
+	}
+
+	public void triggerInteract() {
+		for (IButtonHandler handler : this.interactHandlers) {
+			handler.handle();
+		}
+	}
+
+	public void registerInteractHandler(IButtonHandler handler) {
+		this.interactHandlers.add(handler);
+	}
+
+	public void triggerUse() {
+		for (IButtonHandler handler : this.useHandlers) {
+			handler.handle();
+		}
+	}
+
+	public void registerUseHandler(IButtonHandler handler) {
+		this.useHandlers.add(handler);
 	}
 
 }

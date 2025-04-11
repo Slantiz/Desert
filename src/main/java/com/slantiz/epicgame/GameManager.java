@@ -1,9 +1,15 @@
 package com.slantiz.epicgame;
 
-import com.slantiz.epicgame.Input.InputController;
 import com.slantiz.epicgame.Settings.SettingsData;
+import com.slantiz.epicgame.entity.Enemy;
+import com.slantiz.epicgame.entity.Entity;
+import com.slantiz.epicgame.entity.EntityFactory;
+import com.slantiz.epicgame.entity.Pawn;
 import com.slantiz.epicgame.entity.Player;
+import com.slantiz.epicgame.entity.Sword;
+import com.slantiz.epicgame.input.InputController;
 import com.slantiz.epicgame.rendering.Camera;
+import com.slantiz.epicgame.rendering.InfoDisplayer;
 import com.slantiz.epicgame.rendering.Renderer;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.world.World;
@@ -17,7 +23,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 
-public class GameController {
+public class GameManager {
 
 	private SettingsData settings;
 	private Group root;
@@ -27,26 +33,31 @@ public class GameController {
 	private World world;
 	private Player player;
 	private Renderer renderer;
+	private InfoDisplayer infoDisplayer;
 	private InputController inputController;
-	private PlayerController playerController;
 	private int score;
 
-	public GameController(SettingsData settings) {
+	public GameManager(SettingsData settings) {
 		this.settings = settings;
 		root = new Group();
 		scene = new Scene(root);
 
 		initCanvas();
+		initInput();
+		initRenderer();
 		initWorld();
 		initEntities();
-		initRenderer();
-		initInput();
+		hookOnPlayer();
 		startGameLoop();
 	}
 
 	private void initCanvas() {
 		canvas = new Canvas(settings.resolution[0], settings.resolution[1]);
 		root.getChildren().add(canvas);
+	}
+
+	private void initInput() {
+		inputController = new InputController(scene);
 	}
 
 	private void initWorld() {
@@ -58,8 +69,8 @@ public class GameController {
 	private void initEntities() {
 		EntityFactory.init(settings);
 
-		// Create, init and add entities
-		player = EntityFactory.spawnPlayer(world, Vec.zero());
+		// Add player
+		player = EntityFactory.spawnPlayer(world, Vec.zero(), renderer, inputController);
 	}
 
 	private void initRenderer() {
@@ -68,17 +79,17 @@ public class GameController {
 		renderer = new Renderer();
 		renderer.setCanvas(canvas);
 		mainCamera = new Camera(Vec.zero(), 24);
-		mainCamera.setTarget(player);
 		renderer.setCamera(mainCamera);
 
 		Image pointerImg = AssetManager.getImage("pointer.png");
 		scene.setCursor(new ImageCursor(pointerImg));
+
+		infoDisplayer = new InfoDisplayer(2);
 	}
 
-	private void initInput() {
-		inputController = new InputController(scene);
-		playerController = new PlayerController(renderer, inputController);
-		playerController.setPlayer(player);
+	private void hookOnPlayer() {
+		mainCamera.setTarget(player);
+		infoDisplayer.setTarget(player);
 	}
 
 	private void startGameLoop() {
@@ -92,8 +103,14 @@ public class GameController {
 		Image waterImg = AssetManager.getImage("water.png");
 		Font font = AssetManager.getFont("mc-font.ttf", 64);
 
+		// for enemies
+		double spawnDelay = 3;
+
 		new AnimationTimer() {
 			private double lastT = 0;
+
+			// for enemies
+			private double lastSpawnT = 0;
 
 			@Override
 			public void handle(long currentNanoTime) {
@@ -103,6 +120,14 @@ public class GameController {
 				// Update chunks
 				world.generateChunks(player.getPos(), 2, null);
 				world.removeChunks(player.getPos(), removeRadius);
+
+				// Create enemies
+				if (t > lastSpawnT + spawnDelay) {
+					Vec spawnOffset = new Vec(0, 1).rotated(Math.random() * 360).mul(5);
+					Vec spawnPos = player.getPos().add(spawnOffset);
+					EntityFactory.spawnEnemy(world, spawnPos, player);
+					lastSpawnT = t;
+				}
 
 				// Tick all entities
 				world.update(dt);
@@ -121,6 +146,20 @@ public class GameController {
 
 				// Render score
 				renderer.renderText(font, new Vec(canvasWidth - 256, 96), String.valueOf(score));
+
+				// Render info
+				infoDisplayer.infoNearestInteractable(world, renderer, font);
+
+				// Show debug points
+				// for (Entity entity : world.getEntities()) {
+				// 	if (entity instanceof Sword) {
+				// 		Sword sword = (Sword)entity;
+				// 		renderer.drawDebugDot(world, sword.getHitPos(), sword.getDamageRadius());
+				// 	}
+				// 	else if (entity instanceof Pawn) {
+				// 		renderer.drawDebugDot(world, entity.getPos());
+				// 	}
+				// }
 
 				lastT = t;
 			}

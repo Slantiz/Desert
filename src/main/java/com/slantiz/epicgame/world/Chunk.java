@@ -1,6 +1,6 @@
 package com.slantiz.epicgame.world;
 
-import com.slantiz.epicgame.EntityFactory;
+import com.slantiz.epicgame.entity.EntityFactory;
 import com.slantiz.epicgame.util.Noise;
 import com.slantiz.epicgame.util.Vec;
 
@@ -27,6 +27,12 @@ public class Chunk {
 			// Spawn cactus
 			Vec randomOffset = new Vec(Math.random() * world.getChunkNumUnits().x, Math.random() * world.getChunkNumUnits().y);
 			EntityFactory.spawnCactus(world, this.getPos().add(randomOffset));
+		}
+
+		if (Math.random() < 1) {
+			// Spawn sword
+			Vec randomOffset = new Vec(Math.random() * world.getChunkNumUnits().x, Math.random() * world.getChunkNumUnits().y);
+			EntityFactory.spawnSword(world, this.getPos().add(randomOffset));
 		}
 	}
 

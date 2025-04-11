@@ -20,7 +20,7 @@ public class App extends Application {
 		AssetManager.init(jarFolder, settings);
 
 		// Init Game
-		GameController gameController = new GameController(settings);
+		GameManager gameController = new GameManager(settings);
 
         stage.setTitle(settings.title);
         stage.setWidth(settings.resolution[0]);

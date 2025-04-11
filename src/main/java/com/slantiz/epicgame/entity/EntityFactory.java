@@ -2,10 +2,10 @@ package com.slantiz.epicgame.entity;
 
 import com.slantiz.epicgame.AssetManager;
 import com.slantiz.epicgame.Settings;
-import com.slantiz.epicgame.Input.InputController;
 import com.slantiz.epicgame.Settings.SettingsData;
 import com.slantiz.epicgame.controllers.EnemyController;
 import com.slantiz.epicgame.controllers.PlayerController;
+import com.slantiz.epicgame.input.InputController;
 import com.slantiz.epicgame.rendering.Renderer;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.world.World;

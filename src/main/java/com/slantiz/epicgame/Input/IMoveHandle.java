@@ -1,4 +1,4 @@
-package com.slantiz.epicgame.Input;
+package com.slantiz.epicgame.input;
 
 import com.slantiz.epicgame.util.Vec;
 
