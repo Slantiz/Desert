@@ -3,8 +3,11 @@ package com.slantiz.epicgame.world;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.slantiz.epicgame.controllers.PawnController;
 import com.slantiz.epicgame.entity.Entity;
+import com.slantiz.epicgame.entity.Item;
 import com.slantiz.epicgame.entity.components.ICollidable;
+import com.slantiz.epicgame.entity.components.IInteractable;
 import com.slantiz.epicgame.util.Noise;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.util.VecHasher;
@@ -18,12 +21,30 @@ public class World {
 
 	private ArrayList<Entity> entities;
 	private HashMap<Long, Chunk> chunks;
+	private ArrayList<PawnController> pawnControllers;
 
 	public World(Vec chunkSize) {
 		this.chunkNumUnits = chunkSize;
 
 		this.entities = new ArrayList<>();
 		this.chunks = new HashMap<>();
+		this.pawnControllers = new ArrayList<>();
+	}
+
+	public Vec getChunkNumUnits() {
+		return chunkNumUnits.copy();
+	}
+
+	public HashMap<Long, Chunk> getChunks() {
+		return this.chunks;
+	}
+
+	public Image getChunkSprite() {
+		return chunkSprite;
+	}
+
+	public void setChunkSprite(Image chunkSprite) {
+		this.chunkSprite = chunkSprite;
 	}
 
 	public void generateChunk(int chunkX, int chunkY, Noise noise) {
@@ -79,12 +100,40 @@ public class World {
 				((ICollidable)other).onCollision(entity);
 			 }
 		}
+
+		// Tick controllers
+		for (PawnController controller : pawnControllers) {
+			controller.update(dt);
+		}
+	}
+
+	public IInteractable getNearestInteractable(Vec pos, double radius) {
+		IInteractable interactable = null;
+		double dist = Float.POSITIVE_INFINITY;
+		for (Entity entity : getEntitiesInRadius(pos, radius)) {
+			if (!(entity instanceof IInteractable)) continue;
+			if (entity instanceof Item && ((Item)entity).getParent() != null) continue;
+			double newDist = pos.sqrDist(entity.getPos());
+
+			if (interactable == null) {
+				interactable = (IInteractable)entity;
+				dist = newDist;
+				continue;
+			}
+			
+			if (newDist < dist) {
+				interactable = (IInteractable)entity;
+				dist = newDist;
+			}
+		}
+
+		return interactable;
 	}
 
 	public ArrayList<Entity> getEntitiesInRadius(Vec pos, double radius) {
 		ArrayList<Entity> entitiesInRadius = new ArrayList<>();
 		for (Entity entity : entities) {
-			if (entity.getPos().sqrDist(pos) > radius) continue;
+			if (entity.getPos().sqrDist(pos) > radius * radius) continue;
 			entitiesInRadius.add(entity);
 		}
 		return entitiesInRadius;
@@ -92,18 +141,6 @@ public class World {
 
 	public double leastRemoveRadius(int generationRadius) {
 		return Math.sqrt(Math.pow((generationRadius + 1) * Math.max(chunkNumUnits.x, chunkNumUnits.y), 2) * 2);
-	}
-
-	public Vec getChunkNumUnits() {
-		return chunkNumUnits.copy();
-	}
-
-	public Image getChunkSprite() {
-		return chunkSprite;
-	}
-
-	public void setChunkSprite(Image chunkSprite) {
-		this.chunkSprite = chunkSprite;
 	}
 
 	public ArrayList<Entity> getEntities() {
@@ -118,7 +155,15 @@ public class World {
 		this.entities.remove(entity);
 	}
 
-	public HashMap<Long, Chunk> getChunks() {
-		return this.chunks;
+	public ArrayList<PawnController> getPawnControllers() {
+		return this.pawnControllers;
+	}
+
+	public void addPawnController(PawnController controller) {
+		this.pawnControllers.add(controller);
+	}
+
+	public void removePawnController(PawnController controller) {
+		this.pawnControllers.remove(controller);
 	}
 }
