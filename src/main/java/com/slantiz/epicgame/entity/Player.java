@@ -8,7 +8,7 @@ import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
-public class Player extends Character implements IDamageable, IThirstable, ICollidable {
+public class Player extends Pawn implements IDamageable, IThirstable, ICollidable {
 
 	protected int maxHealth;
 	protected int health;
@@ -81,7 +81,7 @@ public class Player extends Character implements IDamageable, IThirstable, IColl
 		if (amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
+		this.setHydration(this.hydration + amount);
 	}
 
 	public void damage(int amount) {

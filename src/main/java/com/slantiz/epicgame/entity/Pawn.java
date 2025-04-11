@@ -1,6 +1,7 @@
 package com.slantiz.epicgame.entity;
 
-import com.slantiz.epicgame.entity.components.IHoldable;
+import com.slantiz.epicgame.controllers.PawnController;
+import com.slantiz.epicgame.entity.components.IInteractable;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.world.World;
 
@@ -9,15 +10,16 @@ import javafx.scene.image.Image;
 /**
  * The base controllable entity class.
  */
-public abstract class Character extends Entity {
+public abstract class Pawn extends Entity {
 
+	protected PawnController controller;
 	protected Vec dir;
 	protected Vec velocity;
 	protected double facing;
 	protected double acceleration;
 	protected double speed;
-	protected IHoldable heldEntity;
-	protected double pickUpRange;
+	protected Item item;
+	protected double interactRange;
 
 	/**
 	 * Initiates a new controllable entity.
@@ -26,7 +28,7 @@ public abstract class Character extends Entity {
 	 * @param size An initial size
 	 * @param sprite An image for rendering
 	 */
-	public Character(World world, Vec pos, Vec size, Image sprite) {
+	public Pawn(World world, Vec pos, Vec size, Image sprite) {
 		super(world, pos, size, sprite);
 
 		dir = Vec.zero();
@@ -34,7 +36,15 @@ public abstract class Character extends Entity {
 		facing = 0;
 		acceleration = 1;
 		speed = 2;
-		heldEntity = null;
+		item = null;
+	}
+
+	public PawnController getPawnController() {
+		return controller;
+	}
+
+	public void setPawnController(PawnController controller) {
+		this.controller = controller;
 	}
 
 	public Vec getDir() {
@@ -102,28 +112,56 @@ public abstract class Character extends Entity {
 		this.speed = speed;
 	}
 
-	public double getPickUpRange() {
-		return pickUpRange;
+	public double getInteractRange() {
+		return interactRange;
 	}
 
 	/**
 	 * Set the entity's pick-up range.
-	 * @param pickUpRange The pickUpRange
+	 * @param interactRange The pickUpRange
 	 */
-	public void setPickUpRange(double range) {
-		this.pickUpRange = range;
+	public void setInteractRange(double range) {
+		this.interactRange = range;
 	}
 
-	public IHoldable getHeldEntity() {
-		return heldEntity;
+	public Item getItem() {
+		return item;
 	}
 
 	/**
-	 * Set the entity's holdable entity.
-	 * @param heldEntity
+	 * Set the entity's pick-up range.
+	 * @param interactRange The pickUpRange
 	 */
-	public void setHeldEntity(IHoldable heldEntity) {
-		this.heldEntity = heldEntity;
+	public void setItem(Item item) {
+		this.item = item;
+	}
+
+	public void tryInteract() {
+		IInteractable interactable = world.getNearestInteractable(this.getPos(), interactRange);
+		if (interactable == null) return;
+		interactable.interact(this);
+	}
+
+	public void tryUse() {
+		if (item == null) return;
+		item.use();
+	}
+
+	public void drop() {
+		if (item != null) item.drop();
+		item = null;
+	}
+
+	public void knockBack(Vec source, double minSpace, double force) {
+		Vec direction = pos.sub(source);
+		if (direction.len() > 0) direction = direction.normalized();
+		setPos(source.add(direction).mul(minSpace));
+		setVelocity(direction.mul(force));
+	}
+
+	public void knockBack(Vec direction, double force) {
+		if (direction.len() > 0) direction = direction.normalized();
+		setVelocity(direction.mul(force));
 	}
 
 	@Override
