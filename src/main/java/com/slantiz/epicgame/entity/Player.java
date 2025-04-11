@@ -1,19 +1,26 @@
 package com.slantiz.epicgame.entity;
 
+import com.slantiz.epicgame.entity.components.DamageData;
 import com.slantiz.epicgame.entity.components.ICollidable;
 import com.slantiz.epicgame.entity.components.IDamageable;
+import com.slantiz.epicgame.entity.components.IHasScore;
 import com.slantiz.epicgame.entity.components.IThirstable;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.world.World;
 
 import javafx.scene.image.Image;
 
-public class Player extends Pawn implements IDamageable, IThirstable, ICollidable {
+public class Player extends Pawn implements IDamageable, IThirstable, ICollidable, IHasScore {
 
+	protected int score;
 	protected int maxHealth;
 	protected int health;
 	protected int maxHydration;
 	protected int hydration;
+	protected double hydrationDecreaseTime;
+	protected double timeTillHydrationDecrease;
+	protected int playerHydrationHealThreshold;
+	protected Runnable killListener;
 
 	/**
 	 * Creates a new player entity.
@@ -26,10 +33,21 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 	public Player(World world, Vec pos, Vec size, Image sprite, int maxHealth, int health, int maxThirst, int thirst) {
 		super(world, pos, size, sprite);
 
+		score = 0;
+		timeTillHydrationDecrease = 0;
+
 		setMaxHealth(maxHealth);;
 		setHealth(health);
 		setMaxHydration(maxThirst);
 		setHydration(thirst);
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void changeScore(int amount) {
+		this.score += amount;
 	}
 
 	public int getMaxHealth() {
@@ -50,7 +68,6 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 	public void setHealth(int health) {
 		// Clamp the health between 0 and maxHealth
 		this.health = Math.max(Math.min(health, maxHealth), 0);
-		if (health <= 0) kill();
 	}
 
 	public int getMaxHydration() {
@@ -70,11 +87,35 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
 	}
 
+	public double getHydrationDecreaseTime() {
+		return hydrationDecreaseTime;
+	}
+
+	public void setHydrationDecreaseTime(double hydrationDecreaseTime) {
+		this.hydrationDecreaseTime = hydrationDecreaseTime;
+	}
+
+	public int getPlayerHydrationHealThreshold() {
+		return playerHydrationHealThreshold;
+	}
+
+	public void setPlayerHydrationHealThreshold(int threshold) {
+		this.playerHydrationHealThreshold = threshold;
+	}
+
+	public Runnable getKillListener() {
+		return killListener;
+	}
+
+	public void setKillListener(Runnable killListener) {
+		this.killListener = killListener;
+	}
+
 	public void thirst(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		this.hydration = Math.max(Math.min(hydration, maxHydration), 0);
+		setHydration(hydration - amount);
 	}
 
 	public void hydrate(int amount) {
@@ -84,11 +125,13 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 		this.setHydration(this.hydration + amount);
 	}
 
-	public void damage(int amount) {
-		if (amount < 0) {
+	public void damage(DamageData damageData) {
+		if (damageData.amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		this.setHealth(this.health - amount);
+
+		this.setHealth(this.health - damageData.amount);
+		if (health <= 0) kill(damageData);
 	}
 
 	public void heal(int amount) {
@@ -98,8 +141,9 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 		this.setHealth(this.health + amount);
 	}
 
-	public void kill() {
-		System.out.println(String.format("%s JUST DIED!", this.getClass().getName()));
+	public void kill(DamageData damageData) {
+		if (killListener == null) return;
+		killListener.run();
 	}
 
 	public void onCollision(Entity other) {
@@ -108,6 +152,16 @@ public class Player extends Pawn implements IDamageable, IThirstable, ICollidabl
 
 	@Override
 	public void update(double dt) {
+		// Decrease hydration
+		if (timeTillHydrationDecrease <= 0) {
+			if (hydration <= 0) damage(new DamageData(null, 1));
+			else if (hydration >= playerHydrationHealThreshold) heal(1);
+			thirst(1);
+			timeTillHydrationDecrease = hydrationDecreaseTime;
+		} else {
+			timeTillHydrationDecrease -= dt;
+		}
+
 		super.update(dt);
 	}
 }

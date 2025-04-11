@@ -20,6 +20,7 @@ public class World {
 	private Image chunkSprite;
 
 	private ArrayList<Entity> entities;
+	private ArrayList<Entity> entitiesToDestroy;
 	private HashMap<Long, Chunk> chunks;
 	private ArrayList<PawnController> pawnControllers;
 
@@ -27,6 +28,7 @@ public class World {
 		this.chunkNumUnits = chunkSize;
 
 		this.entities = new ArrayList<>();
+		this.entitiesToDestroy = new ArrayList<>();
 		this.chunks = new HashMap<>();
 		this.pawnControllers = new ArrayList<>();
 	}
@@ -105,6 +107,12 @@ public class World {
 		for (PawnController controller : pawnControllers) {
 			controller.update(dt);
 		}
+
+		// Destroy entities
+		for (Entity entity : entitiesToDestroy) {
+			removeEntity(entity);
+		}
+		entitiesToDestroy.clear();
 	}
 
 	public IInteractable getNearestInteractable(Vec pos, double radius) {
@@ -151,8 +159,12 @@ public class World {
 		this.entities.add(entity);
 	}
 
-	public void removeEntity(Entity entity) {
+	private void removeEntity(Entity entity) {
 		this.entities.remove(entity);
+	}
+
+	public void queueEntityDestroy(Entity entity) {
+		this.entitiesToDestroy.add(entity);
 	}
 
 	public ArrayList<PawnController> getPawnControllers() {

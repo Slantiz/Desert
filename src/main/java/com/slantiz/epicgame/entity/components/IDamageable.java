@@ -5,7 +5,7 @@ public interface IDamageable {
 	 * Triggered when the entity is damaged.
 	 * @param amount Damage amount
 	 */
-	public void damage(int amount);
+	public void damage(DamageData damageData);
 
 	/**
 	 * Triggered when the entity is healed.
@@ -16,5 +16,5 @@ public interface IDamageable {
 	/**
 	 * Triggered when the entity is killed.
 	 */
-	public void kill();
+	public void kill(DamageData damageData);
 }

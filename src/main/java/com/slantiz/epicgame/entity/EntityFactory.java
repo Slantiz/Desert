@@ -1,7 +1,6 @@
 package com.slantiz.epicgame.entity;
 
 import com.slantiz.epicgame.AssetManager;
-import com.slantiz.epicgame.Settings;
 import com.slantiz.epicgame.Settings.SettingsData;
 import com.slantiz.epicgame.controllers.EnemyController;
 import com.slantiz.epicgame.controllers.PlayerController;
@@ -25,16 +24,30 @@ public class EntityFactory {
 
 	public static Cactus spawnCactus(World world, Vec pos) {
 		Cactus cactus = new Cactus(world, pos, Vec.one(), cactusImg);
+		cactus.setDamangeAmount(settings.cactusDamangeAmount);
+		cactus.setHydrationAmount(settings.cactusHydrationAmount);
+		cactus.setHydrateScoreAmount(settings.scoreDrinkIncrease);
 		world.addEntity(cactus);
 		return cactus;
 	}
 
 	public static Player spawnPlayer(World world, Vec pos, Renderer renderer, InputController inputController) {
 		// Init player
-		Player player = new Player(world, pos, Vec.one(), playerImg, 100, 100, 100, 10);
+		Player player = new Player(
+			world,
+			pos,
+			Vec.one(),
+			playerImg,
+			settings.playerMaxHealth,
+			settings.playerInitHealth,
+			settings.playerMaxHydration,
+			settings.playerInitHydration);
+		
 		player.setAcceleration(settings.playerAcceleration);
 		player.setSpeed(settings.playerSpeed);
-		player.setInteractRange(2);
+		player.setInteractRange(settings.playerInteractionRange);
+		player.setHydrationDecreaseTime(1);
+		player.setPlayerHydrationHealThreshold(settings.playerHydrationHealThreshold);
 
 		// Init controller
 		PlayerController controller = new PlayerController(renderer, inputController);
@@ -48,10 +61,10 @@ public class EntityFactory {
 
 	public static Sword spawnSword(World world, Vec pos) {
 		Sword sword = new Sword(world, pos, Vec.one(), swordImg);
-		sword.setDamage(20);
-		sword.setDamageRadius(0.4);
-		sword.setStabDist(0.5);
-		sword.setRechargeTime(0.5);
+		sword.setDamageAmount(settings.swordDamage);
+		sword.setDamageRadius(settings.swordDamageRadius);
+		sword.setStabDist(settings.swordStabDist);
+		sword.setRechargeTime(settings.swordRechargeTime);
 		sword.setHitPivot(new Vec(-1.0/32, -0.25));
 		world.addEntity(sword);
 		return sword;
@@ -63,6 +76,8 @@ public class EntityFactory {
 		enemy.setTarget(target);
 		enemy.setAcceleration(15);
 		enemy.setSpeed(3 + Math.random() * 2);
+		enemy.setDamageAmount(settings.enemyDamageAmount);
+		enemy.setKillScoreAmount(settings.scoreKillIncrease);
 
 		// Init controller
 		EnemyController controller = new EnemyController(world);

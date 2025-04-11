@@ -23,13 +23,13 @@ public class Chunk {
 	}
 
 	private void generate(Noise noise, World world) {
-		if (Math.random() < 0.5) {
+		if (Math.random() < 0.3) {
 			// Spawn cactus
 			Vec randomOffset = new Vec(Math.random() * world.getChunkNumUnits().x, Math.random() * world.getChunkNumUnits().y);
 			EntityFactory.spawnCactus(world, this.getPos().add(randomOffset));
 		}
 
-		if (Math.random() < 1) {
+		if (Math.random() < 0.2) {
 			// Spawn sword
 			Vec randomOffset = new Vec(Math.random() * world.getChunkNumUnits().x, Math.random() * world.getChunkNumUnits().y);
 			EntityFactory.spawnSword(world, this.getPos().add(randomOffset));

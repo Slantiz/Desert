@@ -2,8 +2,10 @@ package com.slantiz.epicgame.entity;
 
 import java.util.Set;
 
+import com.slantiz.epicgame.entity.components.DamageData;
 import com.slantiz.epicgame.entity.components.ICollidable;
 import com.slantiz.epicgame.entity.components.IDamageable;
+import com.slantiz.epicgame.entity.components.IHasScore;
 import com.slantiz.epicgame.entity.components.IInteractable;
 import com.slantiz.epicgame.entity.components.IThirstable;
 import com.slantiz.epicgame.entity.components.InteractData;
@@ -14,8 +16,36 @@ import javafx.scene.image.Image;
 
 public class Cactus extends Entity implements ICollidable, IInteractable {
 
+	private int damageAmount;
+	private int hydrationAmount;
+	private int hydrateScoreAmount;
+
 	public Cactus(World world, Vec pos, Vec size, Image sprite) {
 		super(world, pos, size, sprite);
+	}
+
+	public int getDamageAmount() {
+		return damageAmount; 
+	}
+
+	public void setDamangeAmount(int amount) {
+		this.damageAmount = amount;
+	}
+
+	public int getHydrationAmount() {
+		return hydrationAmount;
+	}
+
+	public void setHydrationAmount(int amount) {
+		this.hydrationAmount = amount;
+	}
+
+	public int getHydrateScoreAmount() {
+		return hydrateScoreAmount;
+	}
+
+	public void setHydrateScoreAmount(int amount) {
+		this.hydrateScoreAmount = amount;
 	}
 
 	@Override
@@ -26,7 +56,7 @@ public class Cactus extends Entity implements ICollidable, IInteractable {
 	@Override
 	public void onCollision(Entity other) {
 		if (Set.of(other.getClass().getInterfaces()).contains(IDamageable.class)) {
-			((IDamageable)other).damage(10);
+			((IDamageable)other).damage(new DamageData(this, damageAmount));
 		}
 		if ((other instanceof Pawn)) {
 			Vec dir = other.getPos().sub(pos).normalized();
@@ -43,9 +73,12 @@ public class Cactus extends Entity implements ICollidable, IInteractable {
 	@Override
 	public void interact(Pawn entity) {
 		if (entity instanceof IThirstable) {
-			((IThirstable)entity).hydrate(20);
+			((IThirstable)entity).hydrate(hydrationAmount);
+			if (entity instanceof IHasScore) {
+				((IHasScore)entity).changeScore(hydrateScoreAmount);
+			}
 		}
 
-		world.removeEntity(this);
+		world.queueEntityDestroy(this);
 	}
 }

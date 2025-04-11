@@ -24,8 +24,43 @@ public class Settings {
 		public String texturesPath;
 		public String audioPath;
 		public String fontsPath;
+		public String stylesPath;
+
+		public boolean debug;
+
+		public int[] chunkSize;
+
+		public double unitsInWidth;
+
+		public int cactusDamangeAmount;
+		public int cactusHydrationAmount;
+
 		public int playerSpeed;
 		public double playerAcceleration;
+		public double playerInteractionRange;
+		public int playerMaxHealth;
+		public int playerInitHealth;
+		public int playerMaxHydration;
+		public int playerInitHydration;
+		public double playerHydrationDecreaseTime;
+		public int playerHydrationHealThreshold;
+
+		public int swordDamage;
+		public double swordDamageRadius;
+		public double swordStabDist;
+		public double swordRechargeTime;
+
+		public int enemyDamageAmount;
+
+		public int enemySpawnDistance;
+		public double[] spawnTimeRange;
+		public int[] spawnCountRange;
+		public int difficultyIncreaseTime;
+		public int[] difficultyCountIncrease;
+		
+		public int scoreKillIncrease;
+		public int scoreDrinkIncrease;
+		public int scorePassiveIncreaseTime;
 	}
 
 	/**

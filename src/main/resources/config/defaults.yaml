@@ -1,8 +1,53 @@
-resolution: [1920, 1080]
+# App
+resolution: [2560, 1440]
 title: "Epic Desert Game"
 assetsFolder: "assets"
 texturesPath: "textures"
 audioPath: "audio"
 fontsPath: "fonts"
+stylesPath: "styles"
+
+# Debug
+debug: false
+
+# World
+chunkSize: [16, 16]
+
+# Rendering
+unitsInWidth: 24
+
+# Cactus
+cactusDamangeAmount: 5
+cactusHydrationAmount: 30
+
+# Player
 playerSpeed: 4
 playerAcceleration: 15
+playerInteractionRange: 2
+playerMaxHealth: 100
+playerInitHealth: 100
+playerMaxHydration: 100
+playerInitHydration: 100
+playerHydrationDecreaseTime: 1
+playerHydrationHealThreshold: 80
+
+# Sword
+swordDamage: 20
+swordDamageRadius: 0.4
+swordStabDist: 0.5
+swordRechargeTime: 0.5
+
+# Enemy
+enemyDamageAmount: 5
+
+# Enemy manager
+enemySpawnDistance: 24
+spawnTimeRange: [5, 10]
+spawnCountRange: [1, 2]
+difficultyIncreaseTime: 20
+difficultyCountIncrease: [0, 2]
+
+# Score
+scoreKillIncrease: 10
+scoreDrinkIncrease: 5
+scorePassiveIncreaseTime: 1

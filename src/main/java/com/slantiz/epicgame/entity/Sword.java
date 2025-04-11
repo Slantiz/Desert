@@ -1,5 +1,6 @@
 package com.slantiz.epicgame.entity;
 
+import com.slantiz.epicgame.entity.components.DamageData;
 import com.slantiz.epicgame.entity.components.IDamageable;
 import com.slantiz.epicgame.entity.components.InteractData;
 import com.slantiz.epicgame.util.Vec;
@@ -13,7 +14,7 @@ public class Sword extends Item {
 	protected double stabDist;
 	protected double damageRadius;
 	protected double rechargeTimer;
-	protected int damage;
+	protected int damageAmount;
 	protected Vec hitPivot;
 
 	public Sword(World world, Vec pos, Vec size, Image sprite) {
@@ -57,12 +58,12 @@ public class Sword extends Item {
 		this.rechargeTimer = rechargeTimer;
 	}
 
-	public int getDamage() {
-		return damage;
+	public int getDamageAmount() {
+		return damageAmount;
 	}
 
-	public void setDamage(int damage) {
-		this.damage = damage;
+	public void setDamageAmount(int amount) {
+		this.damageAmount = amount;
 	}
 
 	public Vec getHitPivot() {
@@ -92,7 +93,7 @@ public class Sword extends Item {
 
 		for (Entity entity : world.getEntitiesInRadius(hitPos, damageRadius)) {
 			if (!(entity instanceof IDamageable)) continue;
-			((IDamageable)entity).damage(damage);
+			((IDamageable)entity).damage(new DamageData(parent, damageAmount));
 			if (!(entity instanceof Pawn)) continue;
 			((Pawn)entity).knockBack(Vec.fromRot(rot), 15);
 		}

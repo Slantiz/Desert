@@ -11,10 +11,9 @@ import javafx.scene.text.Font;
 public class InfoDisplayer {
 	
 	private Entity target;
-	private double infoRadius;
 	
-	public InfoDisplayer(double infoRadius) {
-		this.infoRadius = infoRadius;
+	public InfoDisplayer() {
+
 	}
 	
 	public Entity getTarget() {
@@ -26,7 +25,7 @@ public class InfoDisplayer {
 	}
 
 	public void infoNearestInteractable(World world, Renderer renderer, Font font) {
-		IInteractable interactable = world.getNearestInteractable(target.getPos(), infoRadius);
+		IInteractable interactable = world.getNearestInteractable(target.getPos(), 2);
 		if (interactable == null) return;
 		InteractData interactData = interactable.getInteractData();
 

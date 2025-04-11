@@ -1,0 +1,23 @@
+
+.root {
+	-fx-font-family: "Consolas";
+}
+
+
+VBox {
+	-fx-background-color: rgb(44, 50, 82);
+	-fx-font-size: 48px;
+}
+
+Button {
+	-fx-pref-width: 200px;
+	-fx-pref-height: 50px;
+	-fx-background-radius: 0px;
+	-fx-border-color: black;
+	-fx-border-width: 4px;
+	-fx-background-color: rgb(148, 167, 196);
+}
+
+Button:hover {
+	-fx-background-color: rgb(116, 132, 155);
+}

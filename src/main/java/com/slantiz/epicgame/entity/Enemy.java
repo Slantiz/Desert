@@ -1,7 +1,9 @@
 package com.slantiz.epicgame.entity;
 
+import com.slantiz.epicgame.entity.components.DamageData;
 import com.slantiz.epicgame.entity.components.ICollidable;
 import com.slantiz.epicgame.entity.components.IDamageable;
+import com.slantiz.epicgame.entity.components.IHasScore;
 import com.slantiz.epicgame.util.Vec;
 import com.slantiz.epicgame.world.World;
 
@@ -9,9 +11,11 @@ import javafx.scene.image.Image;
 
 public class Enemy extends Pawn implements ICollidable, IDamageable {
 
-	private Entity target;
-	private int maxHealth;
-	private int health;
+	protected Entity target;
+	protected int maxHealth;
+	protected int health;
+	protected int damageAmount;
+	protected int killScoreAmount;
 
 	public Enemy(World world, Vec pos, Vec size, Image sprite, int maxHealth, int health) {
 		super(world, pos, size, sprite);
@@ -32,7 +36,7 @@ public class Enemy extends Pawn implements ICollidable, IDamageable {
 	@Override
 	public void onCollision(Entity other) {
 		if (other instanceof Player) {
-			((Player)other).damage(10);
+			((Player)other).damage(new DamageData(this, damageAmount));
 		}
 		if (other instanceof Pawn) {			
 			((Pawn)other).knockBack(getPos(), 1, 15);
@@ -57,31 +61,51 @@ public class Enemy extends Pawn implements ICollidable, IDamageable {
 	public void setHealth(int health) {
 		// Clamp the health between 0 and maxHealth
 		this.health = Math.max(Math.min(health, maxHealth), 0);
-		if (health <= 0) kill();
 	}
 
-	public void damage(int amount) {
-		if (amount < 0) {
+	public int getDamageAmount() {
+		return damageAmount;
+	}
+
+	public void setDamageAmount(int amount) {
+		this.damageAmount = amount;
+	}
+
+	public int getKillScoreAmount() {
+		return killScoreAmount;
+	}
+
+	public void setKillScoreAmount(int amount) {
+		this.killScoreAmount = amount;
+	}
+
+	public void damage(DamageData damageData) {
+		if (damageData.amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		this.setHealth(this.health - amount);
+
+		setHealth(health - damageData.amount);
+		if (health <= 0) kill(damageData);
 	}
 
 	public void heal(int amount) {
 		if (amount < 0) {
 			throw new IllegalArgumentException("amount cannot be negative.");
 		}
-		this.setHealth(this.health + amount);
+		setHealth(health + amount);
 	}
 
-	public void kill() {
-		System.out.println(String.format("%s JUST DIED!", this.getClass().getName()));
+	public void kill(DamageData damageData) {
+		// Give score
+		if (damageData.attacker != null && damageData.attacker instanceof IHasScore) {
+			((IHasScore)damageData.attacker).changeScore(killScoreAmount);
+		}
 
 		// Remove enemy controller
 		controller.unpossess();
 		world.removePawnController(controller);
 
 		// Remove this enemy
-		world.removeEntity(this);
+		world.queueEntityDestroy(this);
 	}
 }

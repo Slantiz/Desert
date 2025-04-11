@@ -36,7 +36,8 @@ public class Vec {
 		return new Vec(this.x * k, this.y * k);
 	}
 
-	public Vec div(double k) {
+	public Vec div(double k) throws ArithmeticException {
+		if (k == 0) throw new ArithmeticException("Cannot divide by zero");
 		return new Vec(this.x / k, this.y / k);
 	}
 
@@ -60,7 +61,7 @@ public class Vec {
 		return Math.sqrt(sqrDist(other));
 	}
 
-	public Vec normalized() {
+	public Vec normalized() throws ArithmeticException {
 		return this.copy().div(this.len());
 	}
 

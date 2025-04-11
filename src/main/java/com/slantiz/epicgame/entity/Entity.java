@@ -85,13 +85,6 @@ public abstract class Entity {
 	}
 
 	/**
-	 * This runs when the entity is destroyed.
-	 */
-	public void destroy() {
-
-	}
-
-	/**
 	 * Updates the entity's state.
 	 * This is called every frame.
 	 * @param deltaTime Time (seconds) since last frame

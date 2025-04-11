@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.slantiz.epicgame.Settings.SettingsData;
+import com.slantiz.epicgame.util.Vec;
 
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
@@ -23,12 +24,14 @@ public class AssetManager {
 	private static String texturesPath;
 	private static String audioPath;
 	private static String fontsPath;
+	private static String stylesPath;
 
 	public static void init(Path jarFolder, SettingsData settings) {
 		assetFolder = jarFolder.resolve(settings.assetsFolder);
 		texturesPath = settings.texturesPath;
 		audioPath = settings.audioPath;
 		fontsPath = settings.fontsPath;
+		stylesPath = settings.stylesPath;
 	}
 
 	public static InputStream getResourceStream(String path) {
@@ -61,6 +64,12 @@ public class AssetManager {
 	public static Image getImage(String name) {
 		InputStream stream = getAsset(String.format("%s/%s", texturesPath, name));
 		Image image = new Image(stream);
+		return image;
+	}
+
+	public static Image getImage(String name, Vec size, boolean preserveRatio, boolean smooth) {
+		InputStream stream = getAsset(String.format("%s/%s", texturesPath, name));
+		Image image = new Image(stream, size.x, size.y, preserveRatio, smooth);
 		return image;
 	}
 
