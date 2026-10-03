@@ -3,8 +3,8 @@ package com.slantiz.epicgame;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,6 @@ public class Settings {
 		public String title;
 		public String assetsFolder;
 		public String texturesPath;
-		public String audioPath;
 		public String fontsPath;
 		public String stylesPath;
 
@@ -114,18 +113,19 @@ public class Settings {
 	 * @return The settings data
 	 */
 	public static SettingsData load(Path optionalPath) throws YAMLException {
-		InputStream defaultStream = loadDefaultStream();
-		InputStream optionalStream = null;
+		Yaml yaml = new Yaml();
+		Map<String, Object> values = yaml.load(loadDefaultStream());
 
-		try {
-			optionalStream = loadOptionalStream(optionalPath);
-		} catch (FileNotFoundException e) {
-			LOGGER.warn("Could not load optional settings from {}", optionalPath.toString());
+		// Merge the optional entries over the defaults, entry by entry
+		try (InputStream optionalStream = loadOptionalStream(optionalPath)) {
+			Map<String, Object> optionalValues = yaml.load(optionalStream);
+			if (optionalValues != null) values.putAll(optionalValues);
+			LOGGER.info("Successfully loaded optional settings from {}", optionalPath.toString());
+		} catch (Exception e) {
+			LOGGER.info("No optional settings at {} (using the defaults)", optionalPath.toString());
 		}
 
-		Yaml yaml = new Yaml();
-		InputStream combined = optionalStream != null ? new SequenceInputStream(defaultStream, optionalStream) : defaultStream;
-		SettingsData settingsData = yaml.loadAs(combined, SettingsData.class);
+		SettingsData settingsData = yaml.loadAs(yaml.dump(values), SettingsData.class);
 		LOGGER.info("Successfully loaded settings");
 		return settingsData;
 	}

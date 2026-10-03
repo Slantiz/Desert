@@ -1,14 +1,61 @@
 # Epic Desert Game
 
-This is a simple game made with JavaFX.
+A small top-down survival game made with JavaFX. Wander a procedurally generated desert,
+fend off enemies with your sword, and drink from cacti before your hydration runs out.
 
-### Build
+![Epic Desert Game](docs/screenshot.png)
 
-To run this game, simply compile it using maven:
+## Gameplay
+
+- Enemies will attack you. Find a sword to fend them off!
+- The desert is dry and your hydration will decrease. Find cacti to drink from.
+- When your hydration is high enough, you will recover health.
+
+> [!NOTE]
+> The game is not balanced at all and you will die rather quickly.
+
+## Controls
+
+| Action      | Input                 |
+| ----------- | --------------------- |
+| Move        | `WASD` / arrow keys   |
+| Aim         | Mouse                 |
+| Stab        | Left click            |
+| Interact    | `E`                   |
+
+## Requirements
+
+- [Java 21 or newer](https://adoptium.net/)
+
+## Play
+
+Grab `epicgame.jar` from the [latest release](../../releases/latest) and run it:
+
 ```
-mvn package
+java -jar epicgame.jar
 ```
 
-### Settings
+## Build from source
 
-A settings.yaml file can be added in the same directory as the .jar file for overriding the default settings.
+```
+./mvnw package      # builds the runnable jar into target/
+./mvnw javafx:run   # or launch it straight from the checkout
+```
+
+`JAVA_HOME` must point at a JDK 21 or newer.
+
+## Settings
+
+Put a `settings.yaml` next to the jar to override any entry from
+[defaults.yaml](src/main/resources/config/defaults.yaml) — only the keys you list are changed:
+
+```yaml
+resolution: [1920, 1080]
+playerSpeed: 6
+```
+
+Your highscore is stored in `data.txt`, also next to the jar.
+
+## License
+
+[MIT](LICENSE)

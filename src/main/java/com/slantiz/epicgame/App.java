@@ -3,7 +3,7 @@ package com.slantiz.epicgame;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -19,9 +19,9 @@ public class App extends Application {
 	private SaveData saveData;
 
     @Override
-    public void start(Stage stage) throws URISyntaxException {
+    public void start(Stage stage) {
 		// Load settings (This should crash if it fails)
-		Path jarFolder = Path.of(App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+		Path jarFolder = resolveBaseFolder();
 		SettingsData settings = Settings.load(jarFolder.resolve("settings.yaml"));
 
 		// Load save data
@@ -39,7 +39,8 @@ public class App extends Application {
         stage.setTitle(settings.title);
         stage.setWidth(settings.resolution[0]);
         stage.setHeight(settings.resolution[1]);
-		stage.setFullScreen(true);
+		stage.setFullScreen(false);
+		stage.centerOnScreen();
 
 		menu = new Menu(() -> {
 			// Callback for play button press
@@ -70,6 +71,23 @@ public class App extends Application {
 		stage.setScene(menu.getScene());
 		stage.show();
     }
+
+	/**
+	 * Resolves the folder that {@code settings.yaml} and {@code data.txt} are read from,
+	 * which is the folder holding the jar (or the build output folder when run from a checkout).
+	 * Code inside a runtime image has no file location, so the working directory is used there.
+	 * @return The base folder
+	 */
+	private static Path resolveBaseFolder() {
+		try {
+			URI location = App.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+			if ("file".equals(location.getScheme())) return Path.of(location).getParent();
+			LOGGER.info("Code source {} is not a file (using the working directory)", location);
+		} catch (Exception e) {
+			LOGGER.warn("Could not resolve the code source location (using the working directory)", e);
+		}
+		return Path.of(System.getProperty("user.dir")).toAbsolutePath();
+	}
 
 	@Override
 	public void stop() throws Exception {

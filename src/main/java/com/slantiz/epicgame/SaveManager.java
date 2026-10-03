@@ -22,8 +22,8 @@ public class SaveManager {
 	public static SaveData load(Path path) throws IOException, ClassNotFoundException {
 		File file = path.toFile();
 		// Create new data file if it does not already exist
-		if (file.createNewFile()) {
-			LOGGER.warn("Cannot find save data at {} (Creating new file)", path);
+		if (file.createNewFile() || file.length() == 0) {
+			LOGGER.info("No save data at {} yet (starting with an empty highscore)", path);
 			return new SaveData();
 		}
 

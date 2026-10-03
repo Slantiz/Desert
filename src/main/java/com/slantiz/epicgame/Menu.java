@@ -53,7 +53,7 @@ public class Menu {
 		scene = new Scene(root);
 
 		// Enables an outside class to respond to game start
-		startButton.setOnAction((_) -> {
+		startButton.setOnAction((event) -> {
 			playCallback.run();
 		});
 

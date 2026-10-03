@@ -22,14 +22,12 @@ public class AssetManager {
 
 	private static Path assetFolder;
 	private static String texturesPath;
-	private static String audioPath;
 	private static String fontsPath;
 	private static String stylesPath;
 
 	public static void init(Path jarFolder, SettingsData settings) {
 		assetFolder = jarFolder.resolve(settings.assetsFolder);
 		texturesPath = settings.texturesPath;
-		audioPath = settings.audioPath;
 		fontsPath = settings.fontsPath;
 		stylesPath = settings.stylesPath;
 	}

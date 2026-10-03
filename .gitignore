@@ -46,5 +46,6 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
-### Testing jar ###
-*.jar
+### Game runtime files ###
+data.txt
+settings.yaml

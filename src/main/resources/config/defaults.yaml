@@ -1,9 +1,8 @@
 # App
-resolution: [2560, 1440]
+resolution: [1920, 1080]
 title: "Epic Desert Game"
 assetsFolder: "assets"
 texturesPath: "textures"
-audioPath: "audio"
 fontsPath: "fonts"
 stylesPath: "styles"
 
