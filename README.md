@@ -29,10 +29,11 @@ fend off enemies with your sword, and drink from cacti before your hydration run
 
 ## Play
 
-Grab `epicgame.jar` from the [latest release](../../releases/latest) and run it:
+Grab the jar for your system from the [latest release](../../releases/latest) —
+`epicgame-windows.jar`, `epicgame-linux.jar` or `epicgame-macos-arm64.jar` — and run it:
 
 ```
-java -jar epicgame.jar
+java -jar epicgame-windows.jar
 ```
 
 ## Build from source
